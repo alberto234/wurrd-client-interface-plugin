@@ -1,0 +1,12 @@
+# Custom routes used by the Wurrd Client Interface plugin
+
+# This route is use to request for server details without providing authentication
+wurrd_client_simple_server_info:
+    # Relative path from the Mibew web root is used here.
+    path: /wurrd/clientinterface/serverinfo
+    # Set some defaults for the request
+    defaults:
+        # This value is special. It tells the system what action should be
+        # invoked for the response
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ServerController::simpleInfoAction
+    methods: [GET]
