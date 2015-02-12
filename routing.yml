@@ -10,3 +10,10 @@ wurrd_client_simple_server_info:
         # invoked for the response
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ServerController::simpleInfoAction
     methods: [GET]
+
+wurrd_client_operator_login:
+    # The login request details are passed in as a JSON payload.
+    path: /wurrd/clientinterface/login
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::loginAction
+    methods: [PUT]

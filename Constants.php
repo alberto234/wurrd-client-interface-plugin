@@ -46,6 +46,7 @@ class Constants
 	const MSG_INVALID_OPERATOR			= 'InvalidOperator';
 	const MSG_INVALID_DEVICE			= 'InvalidDevice';
 	const MSG_INVALID_JSON				= 'InvalidJSON';
+	const MSG_INVALID_CLIENTID			= 'InvalidClientID';
 	
 	// Constants for keys used to request access
 	const CLIENTID_KEY 	= 'clientid';
