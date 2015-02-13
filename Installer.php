@@ -245,7 +245,7 @@ class Installer extends CoreInstaller
 			Settings::set(Constants::WCI_VERSION_KEY, Constants::WCI_VERSION);
 			Settings::set(Constants::WCI_API_VERSION_KEY, Constants::WCI_API_VERSION);
 			Settings::set(Constants::WCI_INSTALLATION_ID_KEY, 
-							base64_encode(hash("sha256", time(), true)));
+							strtr(base64_encode(hash("sha256", time(), true))), '/', '-');
 		}
 		
 		return true;

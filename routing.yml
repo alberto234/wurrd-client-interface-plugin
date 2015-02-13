@@ -1,5 +1,8 @@
 # Custom routes used by the Wurrd Client Interface plugin
 
+
+## -- Server Information
+
 # This route is use to request for server details without providing authentication
 wurrd_client_simple_server_info:
     # Relative path from the Mibew web root is used here.
@@ -11,9 +14,34 @@ wurrd_client_simple_server_info:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ServerController::simpleInfoAction
     methods: [GET]
 
+# This route is use to request for server details with authentication
+wurrd_client_detail_server_info:
+    path: /wurrd/clientinterface/serverinfo/{apiver}/{accesstoken}/{clientrevision}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ServerController::detailInfoAction
+        clientrevision: 0
+    methods: [GET]
+
+
+## -- Operator interactions
+
 wurrd_client_operator_login:
     # The login request details are passed in as a JSON payload.
-    path: /wurrd/clientinterface/login
+    path: /wurrd/clientinterface/operator/login
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::loginAction
     methods: [PUT]
+
+
+wurrd_client_operator_refresh_access:
+    path: /wurrd/clientinterface/operator/refreshaccess/{accesstoken}/{refreshtoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::refreshAccessAction
+    methods: [PUT]
+
+wurrd_client_operator_logout:
+    path: /wurrd/clientinterface/operator/logout/{accesstoken}/{deviceuuid}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\AuthAPI\Controller\OperatorController::logoutAction
+    methods: [DELETE]
+

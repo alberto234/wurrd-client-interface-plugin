@@ -25,6 +25,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wurrd\Mibew\Plugin\AuthAPI\Classes\AccessManagerAPI;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\OperatorUtil;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\ServerUtil;
 
  /**
   * Controller that handles operator interactions
@@ -65,7 +67,7 @@ class OperatorController extends AbstractController
 				}
 
 				$authorization = AccessManagerAPI::requestAccess($authRequest);
-				$arrayOut = array(
+				$authArray = array(
 							'accesstoken' => $authorization->accesstoken,
 							'accessexpire' => $authorization->dtmaccessexpires,
 							'accesscreated' => $authorization->dtmaccesscreated,
@@ -73,6 +75,16 @@ class OperatorController extends AbstractController
 							'refreshexpire' => $authorization->dtmrefreshexpires,
 							'refreshcreated' => $authorization->dtmrefreshcreated,
 							);
+							
+				$operatorArray = OperatorUtil::getInfo(array('accesstoken' => $authorization->accesstoken),
+														true);
+				
+				$serverInfoArray = ServerUtil::getDetailedInfo(array('accesstoken' => $authorization->accesstoken),
+																true);
+				
+				$arrayOut['authorization'] = $authArray;
+				$arrayOut['operator'] = $operatorArray;
+				$arrayOut['server'] = $serverInfoArray;
 			} catch(Exception\HttpException $e) {
 				$httpStatus = $e->getStatusCode();
 				$message = $e->getMessage();
@@ -87,34 +99,6 @@ class OperatorController extends AbstractController
   
     }
 
-
-    /**
-     * Determine if the requester can access the system with this token
-     *
-     * @param Request $request Incoming request.
-     * @return Response Rendered page content.
-     */
-    public function authorizedAction(Request $request)
-	{
-		$httpStatus = Response::HTTP_OK;
-		$message = Constants::MSG_SUCCESS;
-		
-		$accessToken = $request->attributes->get("accesstoken");
-		try {
-			if (AccessManagerAPI::isAuthorized($accessToken)) {
-				// Do nothing, $message has already been set
-			}
-		} catch(Exception\HttpException $e) {
-			$httpStatus = $e->getStatusCode();
-			$message = $e->getMessage();
-		}
-		
-		$response = new Response(json_encode(array('accesstoken' => $accessToken,
-													'message' => $message)),
-								$httpStatus,
-								array('content-type' => 'application/json'));
-		return $response;
-    }
 
     /**
      * Refresh the access token - Used to refresh an expired token
@@ -154,12 +138,12 @@ class OperatorController extends AbstractController
 
 
     /**
-     * Drop/Revoke access from the system.
+     * Log the operator out of the system.
      *
      * @param Request $request Incoming request.
      * @return Response Rendered page content.
      */
-    public function dropAccessAction(Request $request)
+    public function logoutAction(Request $request)
 	{
 		$httpStatus = Response::HTTP_OK;
 		$message = Constants::MSG_SUCCESS;

@@ -49,13 +49,16 @@ class Constants
 	const MSG_INVALID_CLIENTID			= 'InvalidClientID';
 	
 	// Constants for keys used to request access
-	const CLIENTID_KEY 	= 'clientid';
-	const USERNAME_KEY 	= 'username';
-	const PASSWORD_KEY 	= 'password';
-	const DEVICEUUID_KEY 	= 'deviceuuid';
-	const PLATFORM_KEY 	= 'platform';
-	const TYPE_KEY 		= 'type';
-	const DEVICENAME_KEY 	= 'devicename';
+	const CLIENTID_KEY 			= 'clientid';
+	const USERNAME_KEY 			= 'username';
+	const PASSWORD_KEY 			= 'password';
+	const DEVICEUUID_KEY 		= 'deviceuuid';
+	const PLATFORM_KEY 			= 'platform';
+	const TYPE_KEY 				= 'type';
+	const DEVICENAME_KEY 		= 'devicename';
+	const ACCESSTOKEN_KEY		= 'accesstoken';
+	const CLIENTAPIVER_KEY		= 'clientapiver';
+	const CLIENTREVISION_KEY	= 'clientrevision';
 		
     /**
      * This class should not be instantiated

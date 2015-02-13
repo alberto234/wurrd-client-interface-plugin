@@ -20,10 +20,12 @@
 namespace Wurrd\Mibew\Plugin\ClientInterface\Controller;
 
 use Mibew\Controller\AbstractController;
+use Mibew\Http\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wurrd\Mibew\Plugin\AuthAPI\Classes\AccessManagerAPI;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\ServerUtil;
 
 /**
  * This Controller handles requests concerning
@@ -43,15 +45,46 @@ class ServerController extends AbstractController
 	{
 		$httpStatus = Response::HTTP_OK;
 		$arrayOut = array('message' => Constants::MSG_SUCCESS,
-						  'mibewversion' => MIBEW_VERSION,
-						  'interfaceversion' => Constants::WCI_VERSION,
-						  'apiversion' => Constants::WCI_API_VERSION,
-						  'authapiversion' => AccessManagerAPI::getAuthAPIPluginVersion());
+						  'apiversion' => Constants::WCI_API_VERSION
+						  );
 
 		$response = new Response(json_encode($arrayOut),
 								Response::HTTP_OK,
 								array('content-type' => 'application/json'));
 		return $response;
+    }
+
+
+    /**
+     * Retrieves detailed server information available only after
+	 * authentication
+	 * 
+     * @param Request $request Incoming request.
+     * @return Response Rendered page content.
+     */
+    public function detailInfoAction(Request $request)
+	{
+		$httpStatus = Response::HTTP_OK;
+		$message = Constants::MSG_SUCCESS;
+		$arrayOut = array();
+		
+		$args = array(Constants::ACCESSTOKEN_KEY => $request->attributes->get("accesstoken"),
+					  Constants::CLIENTAPIVER_KEY => $request->attributes->get("apiver"),
+					  Constants::CLIENTREVISION_KEY => $request->attributes->get("clientrevision"));
+		
+		try {
+			$arrayOut = ServerUtil::getDetailedInfo($args);
+		} catch(Exception\HttpException $e) {
+			$httpStatus = $e->getStatusCode();
+			$message = $e->getMessage();
+		}
+		
+		$arrayOut['message'] = $message;
+		$response = new Response(json_encode($arrayOut),
+								$httpStatus,
+								array('content-type' => 'application/json'));
+		return $response;
+  
     }
 }
 
