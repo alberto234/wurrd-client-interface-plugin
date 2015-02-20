@@ -42,6 +42,25 @@ wurrd_client_operator_refresh_access:
 wurrd_client_operator_logout:
     path: /wurrd/clientinterface/operator/logout/{accesstoken}/{deviceuuid}
     defaults:
-        _controller: Wurrd\Mibew\Plugin\AuthAPI\Controller\OperatorController::logoutAction
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::logoutAction
     methods: [DELETE]
 
+wurrd_client_operator_users_update:
+    path: /wurrd/clientinterface/operator/users/updatethreads/{clientrevision}/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\UsersController::updateThreadsAction
+    methods: [GET]
+    requirements:
+        clientrevision: \d{1,10}
+
+# Here we expect a threads query parameter which is a JSON array of threads with the following parameters per entry:
+#   - threadid
+#   - token
+#   - clientrevision
+wurrd_client_operator_messages_update:
+    path: /wurrd/clientinterface/operator/threads/updatemessages/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::updateMessagesAction
+    methods: [GET]
+    requirements:
+        clientrevision: \d{1,10}

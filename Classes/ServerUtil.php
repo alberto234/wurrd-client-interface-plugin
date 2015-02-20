@@ -43,8 +43,8 @@ class ServerUtil
 	 public static function getDetailedInfo($args, $skipChecks = false) {
 
         $accessToken = $args[Constants::ACCESSTOKEN_KEY];
-		$apiVersion = $args[Constants::CLIENTAPIVER_KEY];
-		$clientRevision = $args[Constants::CLIENTREVISION_KEY];
+		// $apiVersion = $args[Constants::CLIENTAPIVER_KEY];
+		// $clientRevision = $args[Constants::CLIENTREVISION_KEY];
 		
 		if (AccessManagerAPI::isAuthorized($accessToken)) {
 			return array('mibewversion' => MIBEW_VERSION,
@@ -52,7 +52,8 @@ class ServerUtil
 						 'apiversion' => Constants::WCI_API_VERSION,
 						 'authapiversion' => AccessManagerAPI::getAuthAPIPluginVersion(),
 						 'installationid' => Settings::get(Constants::WCI_INSTALLATION_ID_KEY),
-						 'logourl' => Settings::get('logo')
+						 'name' => Settings::get('title'),
+						 'logourl' => Settings::get('logo'),
 					);
 		} else {
 			// This shouldn't get here as an exception will be thrown if access is not valid

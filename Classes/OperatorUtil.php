@@ -43,8 +43,8 @@ class OperatorUtil
 	 public static function getInfo($args, $skipChecks = false) {
 
         $accessToken = $args[Constants::ACCESSTOKEN_KEY];
-		$apiVersion = $args[Constants::CLIENTAPIVER_KEY];
-		$clientRevision = $args[Constants::CLIENTREVISION_KEY];
+		// $apiVersion = $args[Constants::CLIENTAPIVER_KEY];
+		// $clientRevision = $args[Constants::CLIENTREVISION_KEY];
 		
 		if ($skipChecks || AccessManagerAPI::isAuthorized($accessToken)) {
 			$authorization = Authorization::loadByAccessToken($accessToken);

@@ -35,6 +35,7 @@ class Constants
 	const WCI_VERSION_KEY			= 'wurrd_ci_version';
 	const WCI_INSTALLATION_ID_KEY	= 'wurrd_ci_installation_id';
 	const WCI_API_VERSION_KEY		= 'wurrd_ci_api_version';
+	const SUPPORTED_MIBEW_PROTOCOL	= '1.0';
 		
 	// API response messages
 	const MSG_SUCCESS			 		= 'Success';
