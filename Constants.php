@@ -48,6 +48,11 @@ class Constants
 	const MSG_INVALID_DEVICE			= 'InvalidDevice';
 	const MSG_INVALID_JSON				= 'InvalidJSON';
 	const MSG_INVALID_CLIENTID			= 'InvalidClientID';
+	const MSG_WRONG_TRHEAD				= 'WrongThread';
+	const MSG_CANNOT_TAKEOVER			= 'CannotTakeover';
+	const MSG_CANNOT_TAKE_THREAD		= 'CannotTakeThread';
+	const MSG_CANNOT_VIEW_THREADS		= 'CannotViewThreads';
+	const MSG_CONFIRM_TAKEOVER			= 'ConfirmTakeover';
 	
 	// Constants for keys used to request access
 	const CLIENTID_KEY 			= 'clientid';

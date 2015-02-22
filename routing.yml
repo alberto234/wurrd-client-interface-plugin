@@ -56,11 +56,47 @@ wurrd_client_operator_users_update:
 # Here we expect a threads query parameter which is a JSON array of threads with the following parameters per entry:
 #   - threadid
 #   - token
-#   - clientrevision
+#   - lastid
 wurrd_client_operator_messages_update:
     path: /wurrd/clientinterface/operator/threads/updatemessages/{accesstoken}
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::updateMessagesAction
     methods: [GET]
+
+wurrd_client_operator_start_chat:
+    path: /wurrd/clientinterface/operator/threads/start/{threadid}/{token}/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::startChatAction
+    methods: [GET]
     requirements:
-        clientrevision: \d{1,10}
+        threadid: \d{1,10}
+
+wurrd_client_operator_close_chat:
+    path: /wurrd/clientinterface/operator/threads/close/{threadid}/{token}/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::closeChatAction
+    methods: [PUT]
+    requirements:
+        threadid: \d{1,10}
+
+# This route is an interface for the client operator to post a batch of messages, possibly for multiple threads
+# A JSON array of messages is expected in the body of the POST request with the following fields:
+#   - threadid
+#   - token
+#   - messages[] 
+wurrd_client_operator_post_messages:
+    path: /wurrd/clientinterface/operator/threads/post/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::postMessagesAction
+    methods: [POST]
+
+
+# This is temporal. Use the batch processing option instead
+wurrd_client_operator_post_message:
+    path: /wurrd/clientinterface/operator/threads/post/{threadid}/{token}/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::postAMessageAction
+    methods: [POST]
+
+
+
