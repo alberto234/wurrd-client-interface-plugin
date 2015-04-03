@@ -21,7 +21,6 @@ namespace Wurrd\Mibew\Plugin\ClientInterface\Controller;
 
 use Mibew\Controller\AbstractController;
 use Mibew\Http\Exception;
-use Mibew\Thread;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wurrd\Mibew\Plugin\AuthAPI\Classes\AccessManagerAPI;
@@ -29,6 +28,7 @@ use Wurrd\Mibew\Plugin\AuthAPI\Model\Authorization;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\AuthenticationManager;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\PackageUtil;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\Thread;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\ThreadProcessor;
 
 
@@ -86,6 +86,7 @@ class ThreadController extends AbstractController
 				$mibewAPIRequests = array();
 				$threadToToken = array();
 				foreach($requestedThreads as $oneThread) {
+					$functions = array();
 					// TODO: We need to verify the parameters
 					$tmpToken = md5(time() + $oneThread['token']);
 					$arguments = array(

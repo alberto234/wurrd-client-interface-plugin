@@ -21,7 +21,7 @@ namespace Wurrd\Mibew\Plugin\ClientInterface\Classes;
 
 use Mibew\RequestProcessor\ThreadProcessor as CoreThreadProcessor;
 use Mibew\RequestProcessor\Exception\ThreadProcessorException;
-use Mibew\Thread;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\Thread;
 
 /**
  * Extends the Mibew core ThreadProcessor
@@ -93,6 +93,70 @@ class ThreadProcessor extends CoreThreadProcessor
 		// Everything in this method up to this point is from mibew-2.0.0-beta.2
 		return array('postedId' => $posted_id);
     }
+
+
+    /**
+     * Send new messages to window. API function
+	 * -- Overriding this so that we can use our Thread subclass.
+     *
+     * @param array $args Associative array of arguments. It must contains the
+     *   following keys:
+     *    - 'threadId': Id of the thread related to chat window
+     *    - 'token': last thread token
+     *    - 'user': TRUE if window used by user and FALSE otherwise
+     *    - 'lastId': last sent message id
+     */
+    protected function apiUpdateMessages($args)
+    {
+        // Load thread
+        $thread = $this->getWurrdThread($args['threadId'], $args['token']);
+
+        // Check variables
+        self::checkParams($args, array('user', 'lastId'));
+
+        // Check access
+        if (!$args['user']) {
+            $this->checkOperator();
+        }
+
+        // Send new messages
+        $last_message_id = $args['lastId'];
+        $messages = array_map(
+            'sanitize_message',
+            $thread->getMessages($args['user'], $last_message_id)
+        );
+
+        return array(
+            'messages' => $messages,
+            'lastId' => $last_message_id,
+        );
+    }
+
+    
+    /**
+     * Loads thread by id and token and checks if thread loaded
+     *
+     * @param int $thread_id Id of the thread
+     * @param int $last_token Last token of the thread
+     * @return \Mibew\Thread
+     * @throws \Mibew\RequestProcessor\ThreadProcessorException
+     */
+    public function getWurrdThread($thread_id, $last_token)
+    {
+        // Load thread
+        $thread = Thread::ovLoad($thread_id, $last_token);
+        // Check thread
+        if (!$thread) {
+            throw new ThreadProcessorException(
+                'Wrong thread',
+                ThreadProcessorException::ERROR_WRONG_THREAD
+            );
+        }
+
+        // Return thread
+        return $thread;
+    }
+
 }
 
 
