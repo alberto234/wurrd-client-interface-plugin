@@ -336,6 +336,7 @@ class ThreadController extends AbstractController
 		$arrayOut = array();
 		$accessToken = $request->attributes->get("accesstoken");
 		$postedConfirmations = array();
+		$threadConfirmations = array();
 
 		try {
 			if (AccessManagerAPI::isAuthorized($accessToken)) {
@@ -351,9 +352,11 @@ class ThreadController extends AbstractController
 				
 				$mibewAPIRequests = array();
 				$reqTokenToClientMsgId = array();
+				$reqTokenToThreadId = array();
 				$i = 0;
 				foreach($threadMessages as $threadMessage) {
 					$threadId = $threadMessage['threadid'];
+					$threadConfirmations[$threadId] = array();
 					$token = $threadMessage['token'];
 					$postedMessages = $threadMessage['messages'];
 					foreach($postedMessages as $clientMessage) {
@@ -378,6 +381,7 @@ class ThreadController extends AbstractController
 						$functions[] = PackageUtil::makeFunction('post', $arguments);
 						$mibewAPIRequests[] = PackageUtil::makeRequest($reqToken, $functions);
 						$reqTokenToClientMsgId[$reqToken] = $clientMessageId;
+						$reqTokenToThreadId[$reqToken] = $threadId;
 					}
 				}
 				
@@ -404,6 +408,7 @@ class ThreadController extends AbstractController
 								$confirmation['clientmessageid'] = $reqTokenToClientMsgId[$retRequest['token']];
 								$confirmation['servermessageid'] =  $retFunction['arguments']['postedId'];
 								$postedConfirmations[] = $confirmation;
+								$threadConfirmations[$reqTokenToThreadId[$retRequest['token']]][] = $confirmation;
 								// Once we get the result, we move onto the next request
 								break;
 							}
@@ -412,7 +417,13 @@ class ThreadController extends AbstractController
 				}
 			}
 
-			$arrayOut['confirmations'] = $postedConfirmations;
+			// Create the output from the $threadConfirmations array
+			$output = array();
+			foreach($threadConfirmations as $threadId => $confirmations) {
+				$output[] = array('threadid' => $threadId,
+								  'confirmations' => $confirmations);
+			}
+			$arrayOut['threadconfirmations'] = $output;
 		} catch(Exception\HttpException $e) {
 			$httpStatus = $e->getStatusCode();
 			$message = $e->getMessage();
