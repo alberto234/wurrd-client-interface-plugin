@@ -67,7 +67,7 @@ wurrd_client_operator_start_chat:
     path: /wurrd/clientinterface/operator/threads/start/{threadid}/{token}/{accesstoken}
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::startChatAction
-    methods: [GET]
+    methods: [PUT]
     requirements:
         threadid: \d{1,10}
 
