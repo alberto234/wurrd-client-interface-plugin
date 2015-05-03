@@ -99,4 +99,30 @@ wurrd_client_operator_post_message:
     methods: [POST]
 
 
+## -- Notification server interface
+wurrd_client_notification_server_check_for_updates:
+    path: /wurrd/clientinterface/notification/checkforupdates/{accesstoken}/{clientrevision}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\NotificationController::checkForUpdatesAction
+    methods: [GET]
+
+# This route is an interface for the notification server to check for updates for multiple clients on this server
+# Although this call wouldn't make any changes to the state of the server, we are using a POST here because we can
+# potentially pass in a lot of data. 
+# A JSON array containing the request detail for each client is expected in the body of the POST request 
+# Each element has the following fields:
+#   - accesstoken
+#   - threadrevision
+#   - activethreads[]
+#   -- threadid
+#   -- token
+#   -- lastid
+wurrd_client_notification_server_bulk_check_for_updates:
+    path: /wurrd/clientinterface/notification/bulkcheckforupdates
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\NotificationController::bulkCheckForUpdatesAction
+    methods: [POST]
+
+
+
 

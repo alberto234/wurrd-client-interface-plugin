@@ -157,6 +157,18 @@ class ThreadProcessor extends CoreThreadProcessor
         return $thread;
     }
 
+    /**
+     * Gets a new instance of the ThreadProcessor. The getInstance() method returns
+	 * a singleton which makes it difficult to use a ThreadProcessor and a UsersProcessor
+	 * within the same request. The NotificationController calls both when checking if a 
+	 * particular client needs to be notified of new activity
+     *
+     * @return ThreadProcessor 	A new ThreadProcessor instance
+     */
+     public static function getNewInstance() {
+     	return new static();
+	 }
+
 }
 
 

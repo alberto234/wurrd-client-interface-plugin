@@ -29,6 +29,7 @@ use Wurrd\Mibew\Plugin\AuthAPI\Model\Authorization;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\AuthenticationManager;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\PackageUtil;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\UsersUtil;
 
 
 
@@ -64,62 +65,17 @@ class UsersController extends AbstractController
 				$authenticationMgr->loginOperator($operator, false);
 				$this->setAuthenticationManager($authenticationMgr);
 				
-				// In order to use as much of the core functionality as possible,
-				// we call the UserProcessor to process the request. This involves
-				// creating a MibewAPI package and passing that in a request to the
-				// UserProcessor, then decoding the result from the Response object
-				// that is returned by the processor. This could be made more
-				// efficient if the RequestProcessor provides another method for 
-				// processing functions other than the handleRequest() method.
-
-				$tmpToken = md5(time());
-				$arguments = array(
-								'revision' => $clientRevision,
-								'agentId' => $operator['operatorid'],
-								'references' => array(),
-								'return' => array(
-									'threads' => 'threads',
-									'lastRevision' => 'lastRevision',
-								),
-							);
-				$functions[] = PackageUtil::makeFunction('updateThreads', $arguments);
-				$mibewAPIRequests[] = PackageUtil::makeRequest($tmpToken, $functions);
-				$package = PackageUtil::encodePackage($mibewAPIRequests);
-
-				// Store the package in a request where the processor expects it
-				$request->request->set('data', $package);
 				
-				// Call the request processor
-		        $processor = UsersProcessor::getInstance();
-		        $processor->setAuthenticationManager($this->getAuthenticationManager());
-		        $processorResponse = $processor->handleRequest($request);
-				
-				// Unpack the response and format it in a way that the Wurrd client expects it.
-				$content = $processorResponse->getContent();
-				$decodedRequests = PackageUtil::getRequestsFromPackage($content);
-				
-				$threads = null;
-				$lastRevision = 0;
-				foreach ($decodedRequests as $retRequest) {
-					if ($retRequest['token'] == $tmpToken) {
-						foreach ($retRequest['functions'] as $retFunction) {
-							if ($retFunction['function'] == 'result') {
-								$threads = $retFunction['arguments']['threads'];
-								$lastRevision = $retFunction['arguments']['lastRevision'];
-								
-								// For this call we expect only one request, which holds the result.
-								break;
-							}
-						}
-					}
-					if ($threads != null) {
-						break;
-					}
+				$activeThreads = UsersUtil::getActiveThreads($operator,
+																$clientRevision, 
+																$authenticationMgr,
+																array('threads' => 'threads',
+																	  'lastRevision' => 'lastRevision',
+																));
+				if ($activeThreads != null) {
+					$arrayOut = $activeThreads;
 				}
 			}
-
-			$arrayOut['threads'] = $threads;
-			$arrayOut['lastrevision'] = $lastRevision;
 		} catch(Exception\HttpException $e) {
 			$httpStatus = $e->getStatusCode();
 			$message = $e->getMessage();

@@ -30,6 +30,7 @@ use Wurrd\Mibew\Plugin\ClientInterface\Classes\AuthenticationManager;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\PackageUtil;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\Thread;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\ThreadProcessor;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\ThreadUtil;
 
 
 
@@ -55,7 +56,6 @@ class ThreadController extends AbstractController
 		$arrayOut = array();
 		$accessToken = $request->attributes->get("accesstoken");
 		$threads = $request->query->get('threads');
-		$threadMessages = array();
 
 		try {
 			if (AccessManagerAPI::isAuthorized($accessToken)) {
@@ -66,14 +66,6 @@ class ThreadController extends AbstractController
 				$authenticationMgr->loginOperator($operator, false);
 				$this->setAuthenticationManager($authenticationMgr);
 				
-				// In order to use as much of the core functionality as possible,
-				// we call the ThreadProcessor to process the request. This involves
-				// creating a MibewAPI package and passing that in a request to the
-				// ThreadProcessor, then decoding the result from the Response object
-				// that is returned by the processor. This could be made more
-				// efficient if the RequestProcessor provides another method for 
-				// processing functions other than the handleRequest() method.
-
 				$requestedThreads = json_decode($threads, true);
 		        $json_error_code = json_last_error();
 		        if ($json_error_code != JSON_ERROR_NONE) {
@@ -83,63 +75,12 @@ class ThreadController extends AbstractController
 									Constants::MSG_INVALID_JSON);
 				}
 
-				$mibewAPIRequests = array();
-				$threadToToken = array();
-				foreach($requestedThreads as $oneThread) {
-					$functions = array();
-					// TODO: We need to verify the parameters
-					$tmpToken = md5(time() + $oneThread['token']);
-					$arguments = array(
-									'threadId' => $oneThread['threadid'],
-									'token' => $oneThread['token'],
-									'lastId' => $oneThread['lastid'],
-									'user' => false, 		// False since this action is reached from an operator client
-									'references' => array(),
-									'return' => array(
-										'messages' => 'messages',
-										'lastId' => 'lastId',
-									),
-								);
-					$functions[] = PackageUtil::makeFunction('updateMessages', $arguments);
-					$mibewAPIRequests[] = PackageUtil::makeRequest($tmpToken, $functions);
-					$threadToToken[$tmpToken] = $oneThread['threadid'];
-				}
 				
-				$package = PackageUtil::encodePackage($mibewAPIRequests);
-
-				// Store the package in a request where the processor expects it
-				$request->request->set('data', $package);
-				
-				// Call the request processor
-		        $processor = ThreadProcessor::getInstance();
-		        $processor->setRouter($this->getRouter());
-		        $processor->setAuthenticationManager($this->getAuthenticationManager());
-		        $processor->setMailerFactory($this->getMailerFactory());
-		        $processorResponse = $processor->handleRequest($request);
-				
-				// Unpack the response and format it in a way that the Wurrd client expects it.
-				$content = $processorResponse->getContent();
-				$decodedRequests = PackageUtil::getRequestsFromPackage($content);
-				
-				$threadMessages = array();
-				$lastRevision = 0;
-				foreach ($decodedRequests as $retRequest) {
-					if (array_key_exists($retRequest['token'], $threadToToken)) {
-						foreach ($retRequest['functions'] as $retFunction) {
-							if ($retFunction['function'] == 'result') {
-								$threadInfo['threadid'] = $threadToToken[$retRequest['token']];
-								$threadInfo['messages'] = $retFunction['arguments']['messages'];
-								$threadInfo['lastid'] = $retFunction['arguments']['lastId'];
-								$threadMessages[] = $threadInfo;
-								// Once we get the result, we move onto the next request
-								break;
-							}
-						}
-					}
-				}
+				$arrayOut = ThreadUtil::updateMessages($authenticationMgr, 
+														$requestedThreads, 
+														array('messages' => 'messages',
+															  'lastId' => 'lastId'));
 			}
-
-			$arrayOut['threadmessages'] = $threadMessages;
 		} catch(Exception\HttpException $e) {
 			$httpStatus = $e->getStatusCode();
 			$message = $e->getMessage();
@@ -151,6 +92,7 @@ class ThreadController extends AbstractController
 								array('content-type' => 'application/json'));
 		return $response;
     }
+
 
     /**
      * Starts a chat session
