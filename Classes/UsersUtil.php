@@ -56,7 +56,11 @@ class UsersUtil
 		// efficient if the RequestProcessor provides another method for 
 		// processing functions other than the handleRequest() method.
 
-		$tmpToken = md5(time());
+		$mibewAPIRequests = array();
+
+		// Prepare a request for the updateThreads function
+		$functions = array();
+		$updateThreadsToken = md5(time() + 1000); 	// 1000 is just a random number
 		$arguments = array(
 						'revision' => $threadRevision,
 						'agentId' => $operator['operatorid'],
@@ -64,7 +68,19 @@ class UsersUtil
 						'return' => $returnArray,
 					);
 		$functions[] = PackageUtil::makeFunction('updateThreads', $arguments);
-		$mibewAPIRequests[] = PackageUtil::makeRequest($tmpToken, $functions);
+		$mibewAPIRequests[] = PackageUtil::makeRequest($updateThreadsToken, $functions);
+		
+		// We also need to make a request for "update" which sends a notify_operator_alive call
+		$functions = array();
+		$updateToken = md5(time() + 2000); 	// 2000 is just a random number
+		$arguments = array(
+						'agentId' => $operator['operatorid'],
+						'references' => array(),
+						'return' => array(),
+					);
+		$functions[] = PackageUtil::makeFunction('update', $arguments);
+		$mibewAPIRequests[] = PackageUtil::makeRequest($updateToken, $functions);
+				
 		$package = PackageUtil::encodePackage($mibewAPIRequests);
 
 		// Create a new request and store the package in it where the processor expects it.
@@ -83,7 +99,7 @@ class UsersUtil
 		$threads = null;
 		$lastRevision = 0;
 		foreach ($decodedRequests as $retRequest) {
-			if ($retRequest['token'] == $tmpToken) {
+			if ($retRequest['token'] == $updateThreadsToken) {
 				foreach ($retRequest['functions'] as $retFunction) {
 					if ($retFunction['function'] == 'result') {
 						$lastRevision = $retFunction['arguments']['lastRevision'];

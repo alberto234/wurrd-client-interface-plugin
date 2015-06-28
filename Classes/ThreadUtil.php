@@ -41,6 +41,10 @@ class ThreadUtil
      */
     public static function updateMessages($authenticationMgr, $requestThreads, $returnArray)
 	{
+		if (count($requestThreads) == 0) {
+			return null;
+		}
+		
 		$arrayOut = null;
 		$threadMessages = array();
 

@@ -111,8 +111,9 @@ class NotificationController extends AbstractController
 						
 						if ($activeThreadsUpdates != null) {
 							$clientNotification['activethreads'] = $activeThreadsUpdates['threadmessages'];
-							$clientNotification['message'] = Constants::MSG_SUCCESS;
 						}
+						
+						$clientNotification['message'] = Constants::MSG_SUCCESS;
 					}
 				} catch(Exception\HttpException $e) {
 					$clientNotification['message'] = $e->getMessage();
