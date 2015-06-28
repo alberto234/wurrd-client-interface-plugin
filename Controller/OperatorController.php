@@ -79,6 +79,11 @@ class OperatorController extends AbstractController
 				$operatorArray = OperatorUtil::getInfo(array('accesstoken' => $authorization->accesstoken),
 														true);
 				
+				// Fix the operator's avatar by getting the URL from the relative path
+				if ($operatorArray['avatarurl'] != null && strlen($operatorArray['avatarurl']) > 0) {
+					$operatorArray['avatarurl'] = $this->asset($operatorArray['avatarurl']);
+				}
+				
 				$serverInfoArray = ServerUtil::getDetailedInfo(array('accesstoken' => $authorization->accesstoken),
 																true);
 				
