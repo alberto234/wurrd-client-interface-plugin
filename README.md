@@ -7,7 +7,7 @@ The plugin uses the [Wurrd Auth API plugin](https://github.com/alberto234/wurrd-
 
 1. This plugin depends on the Wurrd Auth API plugin. Follow the directions to install this plugin from [here](https://github.com/alberto234/wurrd-auth-api-plugin).
 
-2. Get the built archive for this plugin from [here](http://wurrd.scalior.com/get-it-now).
+2. Get the built archive for this plugin from [here](http://wurrd.scalior.com/get-it-now/#wurrd_downloads).
 
 3. Untar/unzip the plugin's archive.
 
