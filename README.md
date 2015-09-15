@@ -1,7 +1,12 @@
 # Client Interface plugin for Mibew by Wurrd
 
-This plugin provides an interface for the Wurrd app to communicate to a Mibew chat server.
+This plugin provides an interface for third party apps to communicate with a Mibew chat server.
 The plugin uses the [Wurrd Auth API plugin](https://github.com/alberto234/wurrd-auth-api-plugin) to provide authentication to the chat server.
+
+## Wurrd App
+
+Wurrd for Mibew is an app that provides operators the ability to chat with website visitors from their mobile devices. This plugin exposes an API that the Wurrd app uses to communicate with a Mibew 2.x chat server. The app can be downloaded from [Google Play](https://play.google.com/store/apps/details?id=com.scalior.wurrd) and from the App Store (coming soon). 
+
 
 ## Installation
 
