@@ -461,5 +461,114 @@ class ThreadController extends AbstractController
 								array('content-type' => 'application/json'));
 		return $response;
 	}
+
+
+    /**
+     * Ping a chat session
+     *
+     * @param Request $request Incoming request.
+     * @return Response Rendered page content.
+     */
+    public function pingAction(Request $request)
+	{
+		$httpStatus = Response::HTTP_OK;
+		$message = Constants::MSG_SUCCESS;
+		$arrayOut = array();
+		$accessToken = $request->attributes->get("accesstoken");
+		$threadId = $request->attributes->getInt('threadid');
+		$token = $request->attributes->get('token');
+		$typed = filter_var($request->attributes->get('typed'), FILTER_VALIDATE_BOOLEAN);
+		
+		// Response variables
+		$userTyping = null;
+		$canPost = null;
+		$threadState = null;
+		$threadAgentId = null;
+		
+		try {
+			if (AccessManagerAPI::isAuthorized($accessToken)) {
+				$authorization = Authorization::loadByAccessToken($accessToken);
+				$operator = operator_by_id($authorization->operatorid);
+	
+				$authenticationMgr = new AuthenticationManager();
+				$authenticationMgr->loginOperator($operator, false);
+				$this->setAuthenticationManager($authenticationMgr);
+		
+				
+				// In order to use as much of the core functionality as possible,
+				// we call the ThreadProcessor to process the request. This involves
+				// creating a MibewAPI package and passing that in a request to the
+				// ThreadProcessor, then decoding the result from the Response object
+				// that is returned by the processor. This could be made more
+				// efficient if the RequestProcessor provides another method for 
+				// processing functions other than the handleRequest() method.
+
+				$tmpToken = md5(time());
+				$arguments = array(
+								'threadId' => $threadId,
+								'token' => $token,
+								'user' => false,
+								'typed' => $typed,
+								'references' => array(),
+								'return' => array(
+						            'typing' => 'typing',
+						            'canPost' => 'canPost',
+						            'threadState' => 'threadState',
+						            'threadAgentId' => 'threadAgentId',
+								),
+							);
+				$functions[] = PackageUtil::makeFunction('update', $arguments);
+				$mibewAPIRequests[] = PackageUtil::makeRequest($tmpToken, $functions);
+				$package = PackageUtil::encodePackage($mibewAPIRequests);
+
+				// Store the package in a request where the processor expects it
+				$request->request->set('data', $package);
+				
+				// Call the request processor
+		        $processor = ThreadProcessor::getInstance();
+		        $processor->setRouter($this->getRouter());
+		        $processor->setAuthenticationManager($this->getAuthenticationManager());
+		        $processor->setMailerFactory($this->getMailerFactory());
+		        $processorResponse = $processor->handleRequest($request);
+
+				// Unpack the response and format it in a way that the Wurrd client expects it.
+				$content = $processorResponse->getContent();
+				$decodedRequests = PackageUtil::getRequestsFromPackage($content);
+				
+				foreach ($decodedRequests as $retRequest) {
+					if ($retRequest['token'] == $tmpToken) {
+						foreach ($retRequest['functions'] as $retFunction) {
+							if ($retFunction['function'] == 'result') {
+								$userTyping = $retFunction['arguments']['typing'];
+								$threadState = $retFunction['arguments']['threadState'];
+								$threadAgentId = $retFunction['arguments']['threadAgentId'];
+								$canPost = $retFunction['arguments']['canPost'];
+								
+								// For this call we expect only one request, which holds the result.
+								break;
+							}
+						}
+					}
+					if ($userTyping != null) {
+						break;
+					}
+				}
+			}
+
+			$arrayOut['usertyping'] = $userTyping;
+			$arrayOut['threadstate'] = $threadState;
+			$arrayOut['threadagentid'] = $threadAgentId;
+			$arrayOut['canpost'] = $canPost;
+		} catch(Exception\HttpException $e) {
+			$httpStatus = $e->getStatusCode();
+			$message = $e->getMessage();
+		}
+		
+		$arrayOut['message'] = $message;
+		$response = new Response(json_encode($arrayOut),
+								$httpStatus,
+								array('content-type' => 'application/json'));
+		return $response;
+	}
 }
 

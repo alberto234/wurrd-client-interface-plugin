@@ -126,6 +126,14 @@ class ThreadProcessor extends CoreThreadProcessor
             $thread->getMessages($args['user'], $last_message_id)
         );
 
+		// Ping the thread here. Normally this is done by the apiUpdate() method. 
+		// However this method will be called when checking for updates for multiple threads
+		// at the same time in the background process when the operator is not actively engaged in this thread.
+		// At this time the operator can't indicate that they are typing or not.
+		// It is also not satisfactory to say the operator is not typing because the background operation could be
+		// triggered even when the operator is actively chatting.
+		$thread->operatorPing(null);
+		
         return array(
             'messages' => $messages,
             'lastId' => $last_message_id,
@@ -168,7 +176,6 @@ class ThreadProcessor extends CoreThreadProcessor
      public static function getNewInstance() {
      	return new static();
 	 }
-
 }
 
 

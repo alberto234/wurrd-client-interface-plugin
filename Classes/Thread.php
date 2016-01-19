@@ -22,6 +22,7 @@ namespace Wurrd\Mibew\Plugin\ClientInterface\Classes;
 use Mibew\Database;
 use Mibew\EventDispatcher\EventDispatcher;
 use Mibew\EventDispatcher\Events;
+use Mibew\Settings;
 use Mibew\Thread as CoreThread;
 
 /**
@@ -147,6 +148,58 @@ class Thread extends CoreThread
 
         return $thread;
     }
+
+    /**
+     * Ping the thread by operator.
+     *
+     * Updates ping time for conversation members and sends messages about
+     * connection problems.
+     *
+     * @param boolean $is_typing Indicates if operator is typing a
+     *   message. null indicates that the typing status should not be updated
+     */
+    public function operatorPing($is_typing)
+    {
+        // Indicates if revision ID of the thread should be updated on save.
+        // Update revision leads to rerender thread in threads list at client
+        // side. Do it on every ping is too costly.
+        $update_revision = false;
+        // Last ping time of other side
+        $last_ping_other_side = 0;
+        // Update last ping time
+        $last_ping_other_side = $this->lastPingUser;
+        $this->lastPingAgent = time();
+		
+		// Update agent typing state only if parameter is not null
+		if (!is_null($is_typing)) {
+	        $this->agentTyping = $is_typing ? "1" : "0";
+		}
+
+        // Check if other side of the conversation have connection problems
+        if ($last_ping_other_side > 0 && abs(time() - $last_ping_other_side) > Settings::get('connection_timeout')) {
+            // Connection problems detected
+            // Update user's last ping time
+            $this->lastPingUser = 0;
+
+            // And send a message to operator.
+            if ($this->state == self::STATE_CHATTING) {
+                $message_to_post = getlocal(
+                    'Visitor closed chat window',
+                    null,
+                    $this->locale,
+                    true
+                );
+                $this->postMessage(
+                    self::KIND_FOR_AGENT,
+                    $message_to_post,
+                    array('created' => $last_ping_other_side + Settings::get('connection_timeout'))
+                );
+            }
+        }
+
+        $this->save(false);
+    }
+
 
 }
 

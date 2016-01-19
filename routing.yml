@@ -98,6 +98,16 @@ wurrd_client_operator_post_message:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::postAMessageAction
     methods: [POST]
 
+# Ping a given thread, also indicating whether the operator is currently typing
+# TODO: List the parameters of the request
+wurrd_client_operator_ping_thread:
+    path: /wurrd/clientinterface/operator/threads/ping/{threadid}/{token}/{typed}/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::pingAction
+    methods: [PUT]
+    requirements:
+        threadid: \d{1,10}
+
 
 ## -- Notification server interface
 wurrd_client_notification_server_check_for_updates:
