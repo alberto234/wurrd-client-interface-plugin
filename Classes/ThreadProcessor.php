@@ -116,7 +116,10 @@ class ThreadProcessor extends CoreThreadProcessor
 
         // Check access
         if (!$args['user']) {
-            $this->checkOperator();
+            $operator = $this->checkOperator();
+
+			// Check for reassign here. Normally this is done by the apiUpdate() method. 
+			$thread->checkForReassign($operator);		
         }
 
         // Send new messages
@@ -125,6 +128,7 @@ class ThreadProcessor extends CoreThreadProcessor
             'sanitize_message',
             $thread->getMessages($args['user'], $last_message_id)
         );
+
 
 		// Ping the thread here. Normally this is done by the apiUpdate() method. 
 		// However this method will be called when checking for updates for multiple threads
