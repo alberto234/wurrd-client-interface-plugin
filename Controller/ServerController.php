@@ -44,8 +44,19 @@ class ServerController extends AbstractController
     public function simpleInfoAction(Request $request)
 	{
 		$httpStatus = Response::HTTP_OK;
+
+		// Determine if we should use POST for all 'input' requests
+		$usePost = false;
+		$configs = load_system_configs();
+		if (!empty($configs['plugins']) &&
+			!empty($configs['plugins']['Wurrd:ClientInterface'])) {
+			$usePost = filter_var($configs['plugins']['Wurrd:ClientInterface']['use_http_post'], 
+								FILTER_VALIDATE_BOOLEAN);
+		}
+
 		$arrayOut = array('message' => Constants::MSG_SUCCESS,
-						  'apiversion' => Constants::WCI_API_VERSION
+						  'apiversion' => Constants::WCI_API_VERSION,
+						  'usepost' => $usePost,
 						  );
 
 		$response = new Response(json_encode($arrayOut),

@@ -1,5 +1,10 @@
 # Custom routes used by the Wurrd Client Interface plugin
-
+#
+# EN >> 3/8/2016 
+# It was discovered that some hosting providers block PUT and DELETE requests
+# As a workaround for such providers, we shall also support POST in addition to 
+# these specific methods. See Issue #3 for more info
+# 
 
 ## -- Server Information
 
@@ -30,20 +35,20 @@ wurrd_client_operator_login:
     path: /wurrd/clientinterface/operator/login
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::loginAction
-    methods: [PUT]
+    methods: [PUT, POST]
 
 
 wurrd_client_operator_refresh_access:
     path: /wurrd/clientinterface/operator/refreshaccess/{accesstoken}/{refreshtoken}
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::refreshAccessAction
-    methods: [PUT]
+    methods: [PUT, POST]
 
 wurrd_client_operator_logout:
     path: /wurrd/clientinterface/operator/logout/{accesstoken}/{deviceuuid}
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::logoutAction
-    methods: [DELETE]
+    methods: [DELETE, POST]
 
 wurrd_client_operator_users_update:
     path: /wurrd/clientinterface/operator/users/updatethreads/{clientrevision}/{accesstoken}
@@ -67,7 +72,7 @@ wurrd_client_operator_start_chat:
     path: /wurrd/clientinterface/operator/threads/start/{threadid}/{token}/{accesstoken}
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::startChatAction
-    methods: [PUT]
+    methods: [PUT, POST]
     requirements:
         threadid: \d{1,10}
 
@@ -75,7 +80,7 @@ wurrd_client_operator_close_chat:
     path: /wurrd/clientinterface/operator/threads/close/{threadid}/{token}/{accesstoken}
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::closeChatAction
-    methods: [PUT]
+    methods: [PUT, POST]
     requirements:
         threadid: \d{1,10}
 
@@ -104,7 +109,7 @@ wurrd_client_operator_ping_thread:
     path: /wurrd/clientinterface/operator/threads/ping/{threadid}/{token}/{typed}/{accesstoken}
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ThreadController::pingAction
-    methods: [PUT]
+    methods: [PUT, POST]
     requirements:
         threadid: \d{1,10}
 

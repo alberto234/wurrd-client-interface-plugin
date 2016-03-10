@@ -47,6 +47,15 @@ class ServerUtil
 		// $clientRevision = $args[Constants::CLIENTREVISION_KEY];
 		
 		if (AccessManagerAPI::isAuthorized($accessToken)) {
+			// Determine if we should use POST for all 'input' requests
+			$usePost = false;
+			$configs = load_system_configs();
+			if (!empty($configs['plugins']) &&
+				!empty($configs['plugins']['Wurrd:ClientInterface'])) {
+				$usePost = filter_var($configs['plugins']['Wurrd:ClientInterface']['use_http_post'], 
+									FILTER_VALIDATE_BOOLEAN);
+			}
+			
 			return array('mibewversion' => MIBEW_VERSION,
 						 'interfaceversion' => Constants::WCI_VERSION,
 						 'apiversion' => Constants::WCI_API_VERSION,
@@ -54,6 +63,7 @@ class ServerUtil
 						 'installationid' => Settings::get(Constants::WCI_INSTALLATION_ID_KEY),
 						 'name' => Settings::get('title'),
 						 'logourl' => Settings::get('logo'),
+						 'usepost' => $usePost,
 					);
 		} else {
 			// This shouldn't get here as an exception will be thrown if access is not valid
