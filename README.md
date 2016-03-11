@@ -16,7 +16,7 @@ Full install and update instructions with pictures can be found on the [Wurrd we
 1. Untar/unzip the plugin's archive.
 1. Copy the entire directory structure for the plugins into the `<Mibew root>/plugins`  folder.
 1. Navigate to "`<Mibew Base URL>`/operator/plugin" page and enable the plugin.
-1. Navigate to `<Mibew root>/cache` and delete the stash folder. There is a bug in Mibew core.
+1. Navigate to `<Mibew root>/cache` and delete the stash folder. There is a [bug](https://github.com/Mibew/mibew/issues/143) in Mibew core.
 
 ## Updating
 
@@ -24,7 +24,7 @@ Full install and update instructions with pictures can be found on the [Wurrd we
 1. Untar/unzip the plugin's archive.
 1. Copy the entire directory structure for the plugins into the `<Mibew root>/plugins`  folder.
 1. Navigate to "`<Mibew Base URL>`/operator/plugin" page and update the plugin.
-1. Navigate to `<Mibew root>/cache` and delete the stash folder. There is a bug in Mibew core.
+1. Navigate to `<Mibew root>/cache` and delete the stash folder. There is a [bug](https://github.com/Mibew/mibew/issues/143) in Mibew core.
 
 ## Plugin's configurations
 
