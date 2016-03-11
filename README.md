@@ -22,6 +22,7 @@ Full install and update instructions with pictures can be found on the [Wurrd we
 
 1. Get the built archive for this plugin from [here](http://wurrdapp.com/get-it-now).
 1. Untar/unzip the plugin's archive.
+1. Backup the `<Mibew root>/plugins/Wurrd/Mibew/Plugin/ClientInterface` folder in case you need to go back. Do not make a copy inside the `Plugin` folder e.g. `ClientInterface.backup`. Place the copy in outside of `<Mibew root>` because Mibew scans the `Plugin` folder for plugins and the backup will cause an error.
 1. Copy the entire directory structure for the plugins into the `<Mibew root>/plugins`  folder.
 1. Navigate to "`<Mibew Base URL>`/operator/plugin" page and update the plugin.
 1. Navigate to `<Mibew root>/cache` and delete the stash folder. There is a [bug](https://github.com/Mibew/mibew/issues/143) in Mibew core.
