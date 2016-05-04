@@ -45,18 +45,9 @@ class ServerController extends AbstractController
 	{
 		$httpStatus = Response::HTTP_OK;
 
-		// Determine if we should use POST for all 'input' requests
-		$usePost = false;
-		$configs = load_system_configs();
-		if (!empty($configs['plugins']) &&
-			!empty($configs['plugins']['Wurrd:ClientInterface'])) {
-			$usePost = filter_var($configs['plugins']['Wurrd:ClientInterface']['use_http_post'], 
-								FILTER_VALIDATE_BOOLEAN);
-		}
-
 		$arrayOut = array('message' => Constants::MSG_SUCCESS,
 						  'apiversion' => Constants::WCI_API_VERSION,
-						  'usepost' => $usePost,
+						  'usepost' => ServerUtil::usePost(),
 						  );
 
 		$response = new Response(json_encode($arrayOut),
@@ -74,6 +65,38 @@ class ServerController extends AbstractController
      * @return Response Rendered page content.
      */
     public function detailInfoAction(Request $request)
+	{
+		$httpStatus = Response::HTTP_OK;
+		$message = Constants::MSG_SUCCESS;
+		$arrayOut = array();
+		
+		$args = array(Constants::ACCESSTOKEN_KEY => $request->attributes->get("accesstoken"));
+		
+		try {
+			$arrayOut = ServerUtil::getDetailedInfo($args);
+		} catch(Exception\HttpException $e) {
+			$httpStatus = $e->getStatusCode();
+			$message = $e->getMessage();
+		}
+		
+		$arrayOut['message'] = $message;
+		$response = new Response(json_encode($arrayOut),
+								$httpStatus,
+								array('content-type' => 'application/json'));
+		return $response;
+    }
+
+
+    /**
+     * Retrieves detailed server information available only after
+	 * authentication
+	 * 
+     * @param Request $request Incoming request.
+     * @return Response Rendered page content.
+	 * 
+	 * This is deprecated as of 1.0.4
+     */
+    public function detailInfoActionDpr(Request $request)
 	{
 		$httpStatus = Response::HTTP_OK;
 		$message = Constants::MSG_SUCCESS;

@@ -171,5 +171,32 @@ class OperatorController extends AbstractController
 		return $response;
     }
 
+    /**
+     * Retrieves the operator's details
+	 * 
+     * @param Request $request Incoming request.
+     * @return Response Rendered page content.
+     */
+    public function detailInfoAction(Request $request)
+	{
+		$httpStatus = Response::HTTP_OK;
+		$message = Constants::MSG_SUCCESS;
+		$arrayOut = array();
+		
+		$accessToken = $request->attributes->get("accesstoken");
+
+		try {
+			$arrayOut = OperatorUtil::getInfo(array(Constants::ACCESSTOKEN_KEY => $accessToken));
+		} catch(Exception\HttpException $e) {
+			$httpStatus = $e->getStatusCode();
+			$message = $e->getMessage();
+		}
+		
+		$arrayOut['message'] = $message;
+		$response = new Response(json_encode($arrayOut),
+								$httpStatus,
+								array('content-type' => 'application/json'));
+		return $response;
+    }
 }
 

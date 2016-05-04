@@ -20,11 +20,20 @@ wurrd_client_simple_server_info:
     methods: [GET]
 
 # This route is use to request for server details with authentication
-wurrd_client_detail_server_info:
+# This is deprecated as of version 1.0.4
+# This route has never been implemented by any of the Wurrd clients, so it is safe to delete
+wurrd_client_detail_server_info_deprecated:
     path: /wurrd/clientinterface/serverinfo/{apiver}/{accesstoken}/{clientrevision}
     defaults:
-        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ServerController::detailInfoAction
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ServerController::detailInfoActionDpr
         clientrevision: 0
+    methods: [GET]
+
+# This route is use to request for server details with authentication
+wurrd_client_detail_server_info:
+    path: /wurrd/clientinterface/serverinfo/details/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\ServerController::detailInfoAction
     methods: [GET]
 
 
@@ -49,6 +58,12 @@ wurrd_client_operator_logout:
     defaults:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::logoutAction
     methods: [DELETE, POST]
+
+wurrd_client_operator_detailed_info:
+    path: /wurrd/clientinterface/operator/details/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\OperatorController::detailInfoAction
+    methods: [GET]
 
 wurrd_client_operator_users_update:
     path: /wurrd/clientinterface/operator/users/updatethreads/{clientrevision}/{accesstoken}
