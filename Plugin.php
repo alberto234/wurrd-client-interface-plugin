@@ -93,7 +93,7 @@ class Plugin extends AbstractPlugin implements PluginInterface
      */
     public static function getDependencies()
     {
-        return array('Wurrd:AuthAPI' => '0.1.*');
+        return array('Wurrd:AuthAPI' => '0.*.*');
     }
 
 
