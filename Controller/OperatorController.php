@@ -78,12 +78,7 @@ class OperatorController extends AbstractController
 							
 				$operatorArray = OperatorUtil::getInfo(array('accesstoken' => $authorization->accesstoken),
 														true);
-				
-				// Fix the operator's avatar by getting the URL from the relative path
-				if ($operatorArray['avatarurl'] != null && strlen($operatorArray['avatarurl']) > 0) {
-					$operatorArray['avatarurl'] = $this->asset($operatorArray['avatarurl']);
-				}
-				
+				$this->fixAvatarURL($operatorArray);				
 				$serverInfoArray = ServerUtil::getDetailedInfo(array('accesstoken' => $authorization->accesstoken),
 																true);
 				
@@ -187,6 +182,7 @@ class OperatorController extends AbstractController
 
 		try {
 			$arrayOut = OperatorUtil::getInfo(array(Constants::ACCESSTOKEN_KEY => $accessToken));
+			$this->fixAvatarURL($arrayOut);
 		} catch(Exception\HttpException $e) {
 			$httpStatus = $e->getStatusCode();
 			$message = $e->getMessage();
@@ -198,5 +194,18 @@ class OperatorController extends AbstractController
 								array('content-type' => 'application/json'));
 		return $response;
     }
+	
+	
+    /**
+     * Fix the operator avatar url by getting the URL from the relative path.
+	 * 
+     * @param $operatorArray	An array that contains the element 'avatarurl'
+     * @return void 	The input array is changed if needed 
+     */
+	private function fixAvatarURL(&$operatorArray) {
+		if ($operatorArray['avatarurl'] != null && strlen($operatorArray['avatarurl']) > 0) {
+			$operatorArray['avatarurl'] = $this->asset($operatorArray['avatarurl']);
+		}
+	}
 }
 
