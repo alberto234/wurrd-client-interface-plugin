@@ -163,6 +163,8 @@ function testCheckForUpdates($mibewURL, $accessToken) {
 
 
 function testLogout($mibewURL, $accessToken, $deviceUUID) {
+	$usePost = isset($_POST['usepost']) && $_POST['usepost'] == "true" ? true : false;
+	
 	$curl = curl_init();
 	
 	curl_setopt_array($curl, array(
@@ -210,6 +212,11 @@ function endTest($error = false) {
 
 ?>
 
+<!--
+	HTML begins here. The this is where the form to be displayed is generated.
+
+-->
+
 
 <!doctype html>
 
@@ -248,7 +255,7 @@ if (isset($mibewURL) && count($mibewURL) > 0 &&
 	
 	echo "Chat server: " . $mibewURL . "<br />";	
 	echo "API Version: " . $serverInfo['apiversion'] . "<br />";	
-	echo "Use POST: " . ($serverInfo['usepost'] ? "true" : "false") . "<br /></br />";	
+	echo "Use POST flag from chat server: " . ($serverInfo['usepost'] ? "true" : "false") . "<br /></br />";	
 		
 	echo "Operator: " . $username . "<br /><br />";
 		
