@@ -19,6 +19,7 @@
 
 namespace Wurrd\Mibew\Plugin\ClientInterface\Classes;
 
+use Mibew\Database;
 use Symfony\Component\HttpFoundation\Request;
 use Wurrd\Mibew\Plugin\AuthAPI\Classes\AccessManagerAPI;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
@@ -114,5 +115,53 @@ class ThreadUtil
 		$arrayOut['threadmessages'] = $threadMessages;
 		return $arrayOut;
     }
+
+	/**
+	 * Add locale and groupId to threads
+	 */
+	public static function decorateThreads(&$threads) {
+		if (is_null($threads) || count($threads) == 0) {
+			return $threads;
+		}
+
+		$threadids = "";
+		$first = true;
+		foreach ($threads as $thread) {
+			if ($first) {
+				$first = false;
+			} else {
+				$threadids .= ", ";
+			}
+			$threadids .= $thread['id'];
+		}
+		
+
+		// Can't pass the threadids in a prepared statement because of the following issue:
+		// http://stackoverflow.com/questions/1586587/pdo-binding-values-for-mysql-in-statement
+		// $values = array(':threadids' => $threadids);
+		$values = array();
+
+	    $db = Database::getInstance();
+		$extendedThreadInfo = $db->query(
+			("SELECT threadid as id, locale, groupid " .
+			 "FROM {thread} " .
+			 "WHERE threadid IN ($threadids) "),
+    		$values,
+			array('return_rows' => Database::RETURN_ALL_ROWS)
+		);
+		
+		
+		foreach ($threads as &$anotherThread) {
+			foreach ($extendedThreadInfo as $key => $oneExtendedInfo) {
+				if ($anotherThread['id'] == $oneExtendedInfo['id']) {
+					$anotherThread['locale'] = $oneExtendedInfo['locale'];
+					$anotherThread['groupid'] = (int)$oneExtendedInfo['groupid'];
+					unset($extendedThreadInfo[$key]);
+					break;
+				}
+			}
+		}
+		return $threads;
+	}
 }
 

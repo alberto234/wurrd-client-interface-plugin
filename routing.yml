@@ -128,6 +128,14 @@ wurrd_client_operator_ping_thread:
     requirements:
         threadid: \d{1,10}
 
+# Get a list of canned responses accessible to the operator
+#  For now we do not filter by locale. We will provide all the responses
+wurrd_client_operator_canned_responses:
+    path: /wurrd/clientinterface/operator/cannedresponses/{accesstoken}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\CannedResponsesController::getCannedResponsesAction
+    methods: [GET]
+
 
 ## -- Notification server interface
 wurrd_client_notification_server_check_for_updates:

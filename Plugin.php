@@ -23,12 +23,16 @@
 
 namespace Wurrd\Mibew\Plugin\ClientInterface;
 
+use Mibew\EventDispatcher\EventDispatcher;
+use Mibew\EventDispatcher\Events;
 use Mibew\Plugin\AbstractPlugin;
 use Mibew\Plugin\PluginInterface;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\ThreadUtil;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
 use Wurrd\Mibew\Plugin\ClientInterface\Installer;
 
-/**
+
+ /*
  * The main plugin's file definition.
  *
  */
@@ -75,6 +79,11 @@ class Plugin extends AbstractPlugin implements PluginInterface
      */
     public function run()
     {
+        // We need an instatance of EventDispatcher class to attach handlers to
+        // events. So get it.
+        $dispatcher = EventDispatcher::getInstance();
+        // There are a lot of events. Use a few of them to show how they work.
+        $dispatcher->attachListener(Events::USERS_UPDATE_THREADS_ALTER, $this, 'processThreads');
     }
 
     /**
@@ -119,4 +128,18 @@ class Plugin extends AbstractPlugin implements PluginInterface
     	$installer = new Installer(load_system_configs());
     	return  $installer->dropTables();
     }
+	
+	 /**
+	 * Add locale and groupId to the thread info.
+	 *
+	 * @param array $args Associative array of arguments passed in to event
+	 * handler. The list of arguments can vary for different events. See an
+	 * event description to know which arguments are available and how they
+	 * should be used.
+	 */
+	public function processThreads(&$args)
+	{
+		ThreadUtil::decorateThreads($args['threads']);
+	}
+	
 }
