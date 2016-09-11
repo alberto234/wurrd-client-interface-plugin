@@ -25,23 +25,19 @@ use Wurrd\Mibew\Plugin\AuthAPI\Model\Authorization;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
 
 /**
- * This is a utility class that backs the CannedMessagesController
+ * This is a utility class that backs the CannedResponsesController
  * 
  * @author Eyong N <eyongn@scalior.com>		09/03/2016
  */
 class CannedResponsesUtil
 {
 	/**
-     * TODO: FIX COMMENT!!!!!!
+	 * Retrieves the canned responses for groups that this operator belongs to.
 	 * 
-	 * Retrieves detailed server information available only after
-	 * authentication
+	 * @param String $accessToken - The access token
 	 * 
-	 * @param array $args - An array containing the arguments needed for the
-	 * 					    access token to be generated. The arguments are
-	 * 						defined in Constants.php are.
-	 * 
-	 * @return array|bool  An array with the server details or false if a failure
+	 * @return array  An array containing the canned responses,
+	 * 					or an empty array if none is available 
 	 */
 	 public static function getCannedResponses($accessToken) {
 

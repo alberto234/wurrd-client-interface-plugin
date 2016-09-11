@@ -29,16 +29,15 @@ use Wurrd\Mibew\Plugin\ClientInterface\Classes\CannedResponsesUtil;
 
 /**
  * This Controller handles requests concerning
- * canned mesages.
+ * canned responses.
  * @author Eyong N <eyongn@scalior.com>		09/03/2016
  */
 class CannedResponsesController extends AbstractController
 {
 
     /**
-     * TODO: FIX COMMENTS!!!!
-	 * Retrieves detailed server information available only after
-	 * authentication
+	/**
+	 * Retrieves the canned responses for groups that this operator belongs to.
 	 * 
      * @param Request $request Incoming request.
      * @return Response Rendered page content.
