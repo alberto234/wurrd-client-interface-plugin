@@ -29,8 +29,8 @@ namespace Wurrd\Mibew\Plugin\ClientInterface;
 class Constants
 {
 	// Version and installation informatiom    
-    const WCI_VERSION 				= '1.0.5';
-	const WCI_API_VERSION			= '1005';
+    const WCI_VERSION 				= '1.0.6';
+	const WCI_API_VERSION			= '1006';
 	const WCI_CONFIG_PREFIX			= 'wurrd_ci_';
 	const WCI_VERSION_KEY			= 'wurrd_ci_version';
 	const WCI_INSTALLATION_ID_KEY	= 'wurrd_ci_installation_id';
@@ -53,6 +53,7 @@ class Constants
 	const MSG_CANNOT_TAKE_THREAD		= 'CannotTakeThread';
 	const MSG_CANNOT_VIEW_THREADS		= 'CannotViewThreads';
 	const MSG_CONFIRM_TAKEOVER			= 'ConfirmTakeover';
+	const MSG_ASSET_NOT_FOUND			= 'AssetNotFound';
 	
 	// Constants for keys used to request access
 	const CLIENTID_KEY 			= 'clientid';

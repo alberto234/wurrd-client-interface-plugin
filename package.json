@@ -1,6 +1,6 @@
 {
     "name": "wurrd-client-interface-plugin",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "A plugin that provides an API for the Wurrd app to communicate with a Mibew chat server",
     "private": true,
     "bugs": {

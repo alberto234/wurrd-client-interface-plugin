@@ -41,7 +41,8 @@ var getSources = function() {
              'routing.yml',
              'Classes/*',
              'Controller/*',
-             'Model/*'
+             'Model/*',
+             'images/**'
         ],
         {base: './'}
     )

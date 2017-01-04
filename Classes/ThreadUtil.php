@@ -20,12 +20,8 @@
 namespace Wurrd\Mibew\Plugin\ClientInterface\Classes;
 
 use Mibew\Database;
+use Mibew\Plugin\PluginManager;
 use Symfony\Component\HttpFoundation\Request;
-use Wurrd\Mibew\Plugin\AuthAPI\Classes\AccessManagerAPI;
-use Wurrd\Mibew\Plugin\ClientInterface\Constants;
-use Wurrd\Mibew\Plugin\ClientInterface\Classes\AuthenticationManager;
-use Wurrd\Mibew\Plugin\ClientInterface\Classes\PackageUtil;
-use Wurrd\Mibew\Plugin\ClientInterface\Classes\ThreadProcessor;
 
 /**
  * This is a utility class that backs the ThreadController
@@ -143,19 +139,65 @@ class ThreadUtil
 
 	    $db = Database::getInstance();
 		$extendedThreadInfo = $db->query(
-			("SELECT threadid as id, locale, groupid " .
+			("SELECT threadid as id, locale, groupid, referer, useragent " .
 			 "FROM {thread} " .
 			 "WHERE threadid IN ($threadids) "),
     		$values,
 			array('return_rows' => Database::RETURN_ALL_ROWS)
 		);
-		
-		
+
+
+		// If the GeoIP address plugin is installed (and enabled)
+		// we will use it to get geo information
+		$geoIPPlugin = null;
+		$pluginManager = PluginManager::getInstance();
+		if ($pluginManager->hasPlugin('Mibew:GeoIp')) {
+			$geoIPPlugin = $pluginManager->getPlugin('Mibew:GeoIp');
+			// We could also do version checks if necessary
+		}
+
 		foreach ($threads as &$anotherThread) {
 			foreach ($extendedThreadInfo as $key => $oneExtendedInfo) {
 				if ($anotherThread['id'] == $oneExtendedInfo['id']) {
 					$anotherThread['locale'] = $oneExtendedInfo['locale'];
 					$anotherThread['groupid'] = (int)$oneExtendedInfo['groupid'];
+					$anotherThread['referrer'] = $oneExtendedInfo['referer'];
+					$anotherThread['fullUserAgent'] = $oneExtendedInfo['useragent'];
+
+					if ($geoIPPlugin != null) {
+						// An IP string can contain more than one IP adress. For example it
+						// can be something like this: "x.x.x.x (x.x.x.x)". Thus we need to
+						// extract all IPS from the string and use the last one.
+
+						// Question (EN 2017-01-03): Can this handle IPv6 addresses? The better question to ask
+						// is whether the MaxMind library can handle IPv6 addresses.
+						$count = preg_match_all(
+							"/(?:(?:[0-9]{1,3}\.){3}[0-9]{1,3})/",
+							$anotherThread['remote'],
+							$matches
+						);
+						if ($count > 0) {
+							try {
+								$ip = end($matches[0]);
+								$info = $geoIPPlugin->getGeoInfo($ip, get_current_locale());
+								$anotherThread['countryName'] = $info['country_name'] ?: '';
+								$anotherThread['countryCode'] = $info['country_code'] ? strtolower($info['country_code']) : '';
+								$anotherThread['city'] = $info['city'] ?: '';
+								$anotherThread['latitude'] = $info['latitude'];
+								$anotherThread['longitude'] = $info['longitude'];
+
+								if (strlen($anotherThread['countryCode']) > 0) {
+									$urlGenerator = UrlGeneratorUtil::getInstance();
+									if ($urlGenerator != null) {
+										$anotherThread['flagUrl'] = UrlGeneratorUtil::getInstance()->fullURL('index.php/wurrd/clientinterface/assets/images/flags/' . $anotherThread['countryCode'] . '.png');
+									}
+								}
+							} catch (\InvalidArgumentException $exception) {
+								// Do nothing
+							}
+						}
+
+					}
 					unset($extendedThreadInfo[$key]);
 					break;
 				}

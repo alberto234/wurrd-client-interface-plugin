@@ -161,6 +161,12 @@ wurrd_client_notification_server_bulk_check_for_updates:
         _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\NotificationController::bulkCheckForUpdatesAction
     methods: [POST]
 
+## -- Assets
+wurrd_client_assets_get_flags:
+    path: /wurrd/clientinterface/assets/images/flags/{countryflag}
+    defaults:
+        _controller: Wurrd\Mibew\Plugin\ClientInterface\Controller\AssetsController::getFlagAction
+    methods: [GET]
 
 
 

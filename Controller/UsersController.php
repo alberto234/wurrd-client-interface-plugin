@@ -21,14 +21,13 @@ namespace Wurrd\Mibew\Plugin\ClientInterface\Controller;
 
 use Mibew\Controller\AbstractController;
 use Mibew\Http\Exception;
-use Mibew\RequestProcessor\UsersProcessor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Wurrd\Mibew\Plugin\AuthAPI\Classes\AccessManagerAPI;
 use Wurrd\Mibew\Plugin\AuthAPI\Model\Authorization;
+use Wurrd\Mibew\Plugin\ClientInterface\Classes\UrlGeneratorUtil;
 use Wurrd\Mibew\Plugin\ClientInterface\Constants;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\AuthenticationManager;
-use Wurrd\Mibew\Plugin\ClientInterface\Classes\PackageUtil;
 use Wurrd\Mibew\Plugin\ClientInterface\Classes\UsersUtil;
 
 
@@ -50,6 +49,9 @@ class UsersController extends AbstractController
      */
     public function updateThreadsAction(Request $request)
 	{
+		// Initialize the UrlGeneratorUtil singleton
+		UrlGeneratorUtil::constructInstance($request, $this);
+
 		$httpStatus = Response::HTTP_OK;
 		$message = Constants::MSG_SUCCESS;
 		$arrayOut = array();
